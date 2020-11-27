@@ -1,4 +1,4 @@
-(deffacts field
+(deffacts init
 	(safe 0 0)
 	(open 0 0))
 
