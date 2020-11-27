@@ -34,7 +34,7 @@ def MakeField(Bombs, Size, Num):
                         field[i][j]+=1  
     return field
 
-def ShowSolved(Field):
+def ShowField(Field):
     print('+',end='')
     for i in range((len(Field)*2)):
         print('-',end='')
@@ -52,6 +52,59 @@ def ShowSolved(Field):
         print('-',end='')
     print('+')
 
+def ShowGameField(Field, Done):
+    print('+',end='')
+    for i in range((len(Field)*2)):
+        print('-',end='')
+    print('+')
+    for i in range(len(Field)):
+        print('|', end='')
+        for j in range(len(Field)):
+            if Field[i][j] == 0:
+                if opened[i][j]:
+                    print(' ', end=' ')
+                else:
+                    print('.', end=' ')
+            else:
+                if opened[i][j]:
+                    print(Field[i][j], end=' ')
+                else:
+                    print('.', end=' ')
+        print('|')
+    print('+',end='')
+    for i in range((len(Field)*2)):
+        print('-',end='')
+    print('+')
+
+
+def open(x, y):
+    if not opened[x][y]:
+        if(field[x][y]!='B'):
+            if(field[x][y]==0):
+                opened[x][y]=True
+                if(x>0) and (y>0):
+                    open(x-1,y-1)
+                if(x>0):
+                    open(x-1,y)
+                if(x>0) and (y<size-1):
+                    open(x-1,y+1)
+                if(y>0):
+                    open(x,y-1)
+                if(y<size-1):
+                    open(x,y+1)
+                if(x<size-1) and (y>0):
+                    open(x+1,y-1)
+                if(x<size-1):
+                    open(x+1,y)
+                if(x<size-1) and (y<size-1):
+                    open(x+1,y+1)
+            else:
+                opened[x][y]=True
+        else:
+            opened[x][y]=True
+            print("You Open a Bomb. You Lose.")
+        ShowGameField(field, opened)
+
 size = int(input())
 n_bombs = int(input())
 coord = []
@@ -60,4 +113,9 @@ for i in range(n_bombs):
     coord.append([int(j) for j in point])
 
 field = MakeField(coord, size, n_bombs)
-ShowSolved(field)
+opened = [[False for i in range(size)] for j in range (size)]
+
+ShowGameField(field, opened)
+open(0,0)
+ShowField(field)
+#ShowSolved(field)
