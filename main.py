@@ -52,7 +52,7 @@ def ShowField(Field):
         print('-',end='')
     print('+')
 
-def ShowGameField(Field, Done):
+def ShowGameField(Field, Done, Flag):
     print('+',end='')
     for i in range((len(Field)*2)):
         print('-',end='')
@@ -63,11 +63,15 @@ def ShowGameField(Field, Done):
             if Field[i][j] == 0:
                 if opened[i][j]:
                     print(' ', end=' ')
+                elif marked[i][j]:
+                    print('M', end=' ')
                 else:
                     print('.', end=' ')
             else:
                 if opened[i][j]:
                     print(Field[i][j], end=' ')
+                elif marked[i][j]:
+                    print('M', end=' ')
                 else:
                     print('.', end=' ')
         print('|')
@@ -77,33 +81,38 @@ def ShowGameField(Field, Done):
     print('+')
 
 
-def open(x, y):
+def Open(x, y):
     if not opened[x][y]:
         if(field[x][y]!='B'):
             if(field[x][y]==0):
                 opened[x][y]=True
                 if(x>0) and (y>0):
-                    open(x-1,y-1)
+                    Open(x-1,y-1)
                 if(x>0):
-                    open(x-1,y)
+                    Open(x-1,y)
                 if(x>0) and (y<size-1):
-                    open(x-1,y+1)
+                    Open(x-1,y+1)
                 if(y>0):
-                    open(x,y-1)
+                    Open(x,y-1)
                 if(y<size-1):
-                    open(x,y+1)
+                    Open(x,y+1)
                 if(x<size-1) and (y>0):
-                    open(x+1,y-1)
+                    Open(x+1,y-1)
                 if(x<size-1):
-                    open(x+1,y)
+                    Open(x+1,y)
                 if(x<size-1) and (y<size-1):
-                    open(x+1,y+1)
+                    Open(x+1,y+1)
             else:
                 opened[x][y]=True
         else:
             opened[x][y]=True
             print("You Open a Bomb. You Lose.")
-        ShowGameField(field, opened)
+        ShowGameField(field, opened, marked)
+
+def Mark(x, y):
+    if not marked[x][y]:
+        marked[x][y]=True
+        ShowGameField(field, opened, marked)
 
 size = int(input())
 n_bombs = int(input())
@@ -114,8 +123,22 @@ for i in range(n_bombs):
 
 field = MakeField(coord, size, n_bombs)
 opened = [[False for i in range(size)] for j in range (size)]
+marked = [[False for i in range(size)] for j in range (size)]
 
-ShowGameField(field, opened)
-open(0,0)
+"""
+Tester
+Uncomment to Test
+
+ShowGameField(field, opened, marked)
+i = input().split()
+i = [int(j) for j in i]
+while i[0]!=100:
+    m = input("mark or open? ")
+    if(m=='o'):
+        Open(i[0],i[1])
+    else:
+        Mark(i[0],i[1])
+    i = input().split()
+    i = [int(j) for j in i]
 ShowField(field)
-#ShowSolved(field)
+"""
