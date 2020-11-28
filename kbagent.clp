@@ -14,18 +14,6 @@
 	(assert(around +(?i 1) +(?j 1)))
 	)
 
-(defrule remove-unsafe-if-safe
-	(safe ?a ?b)
-	=>
-	(retract(unsafe ?a ?b))
-)
-
-(defrule remove-unsafe-if-marked
-	(mark ?a ?b)
-	=>
-	(retract(unsafe ?a ?b))
-)
-
 (deffunction notsame
 	(?a ?b ?c ?d ?e ?f ?g ?h ?i ?j ?k ?l ?m ?n ?o ?p)
 	( and
@@ -104,10 +92,7 @@
 	(unsafe ?o ?p)
 	=>
 	(if(notsame (?a ?b ?c ?d ?e ?f ?g ?h ?i ?j ?k ?l ?m ?n ?o ?p)) then
-		(assert(mark ?o ?p))
-		(retract(unsafe ?o ?p))
-		(retract(around ? ?))
-		(retract(check ?x ?y)))
+		(assert(mark ?o ?p)))
 	)
 
 (defrule mark-box-one-safe
@@ -159,8 +144,6 @@
 		(assert(safe ?m ?n))
 		(assert(mark ?o ?p))
 		(assert(safe ?o ?p))
-		(retract(unsafe ?m ?n))
-		(retract(unsafe ?o ?p))
 	))
 
 (defrule mark-box-three
@@ -190,7 +173,4 @@
 		(assert(safe ?m ?n))
 		(assert(mark ?o ?p))
 		(assert(safe ?o ?p))
-		(retract(unsafe ?k ?l))
-		(retract(unsafe ?m ?n))
-		(retract(unsafe ?o ?p))
 	))
