@@ -53,25 +53,58 @@ def Initiate(env):
             initframe = '(box (P ' + str(i) + ' ' + str(j) + ') (safety FALSE) (number 0) (marked FALSE) (neighboring FALSE))'
             env.assert_string(initframe)
 
-Size = int(input('Masukkan Ukuran:'))
-Num = int(input('Masukkan Jumlah Bom:'))
-Coord = []
-Predict = []
+if __name__ == "__main__":
+    input_method = input('1. Manual\n2. From file\nSelect input method: ')
+    input_method = int(input_method)
 
-for i in range(Num):
-    point = input("Bomb Coordinate : ").split()
-    Coord.append([int(j) for j in point])
+    # Size = int(input('Masukkan Ukuran:'))
+    # Num = int(input('Masukkan Jumlah Bom:'))
+    Coord = []
+    Predict = []
 
-field = Game.MakeField(Coord, Size, Num)
-opened = [[False for i in range(Size)] for j in range(Size)]
-marked = [[False for i in range(Size)] for j in range(Size)]
+    if input_method == 1:
+        size = int(input("Enter size : "))
+        n_bombs = int(input("How many bombs? :"))
 
-Game.ShowGameField(field, opened, marked)
+        for i in range(n_bombs):
+            point = input("Bomb Coordinate : ").split()
+            Coord.append([int(j) for j in point])
 
-env = clips.Environment()
-Initiate(env)
-Action('(open 0 0)')
-UpdateFact()
+    elif input_method == 2:
+        filename = input('File name: ')
+        found = False
+        try:
+            with open(filename, 'r') as f:
+                Size = int(f.readline())
+                n_bombs = int(f.readline())
 
-for i in env.facts():
-    print(i)
+                for i in range(n_bombs):
+                    point = f.readline().split()
+                    Coord.append([int(j) for j in point])
+                f.close()
+        except :
+            print('[INPUT ERROR] file not found, shutting down')
+            quit()
+
+    else:
+        print("[INPUT ERROR] input method not valid, shutting down")
+        quit()
+
+
+    # for i in range(n_bombs):
+    #     point = input("Bomb Coordinate : ").split()
+    #     Coord.append([int(j) for j in point])
+
+    field = Game.MakeField(Coord, Size, n_bombs)
+    opened = [[False for i in range(Size)] for j in range(Size)]
+    marked = [[False for i in range(Size)] for j in range(Size)]
+
+    Game.ShowGameField(field, opened, marked)
+
+    env = clips.Environment()
+    Initiate(env)
+    Action('(open 0 0)')
+    UpdateFact()
+
+    for i in env.facts():
+        print(i)
