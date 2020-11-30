@@ -50,8 +50,9 @@ while i[0] != 100:
         if(m == 'o'):
             if (Game.Open(i[0], i[1], field, opened, marked)):
                 print("Game Field :")
-                Game.ShowField()
-        else:
+                Game.ShowField(field)
+                break
+        else:   # m == 'm'
             Game.Mark(i[0], i[1], field, opened, marked)
 
     except:
@@ -62,4 +63,3 @@ while i[0] != 100:
         quit()
     
     i = Game.inputCoordinate()
-
