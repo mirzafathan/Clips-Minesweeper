@@ -1,176 +1,130 @@
 (deffacts init
-	(open 0 0))
-
-(defrule neighbors
-	(check ?i ?j)
-	=>
-	(assert(around -(?i 1) -(?j 1)))
-	(assert(around -(?i 1) ?j))
-	(assert(around -(?i 1) +(?j 1)))
-	(assert(around ?i -(?j 1)))
-	(assert(around ?i +(?j 1)))
-	(assert(around +(?i 1) -(?j 1)))
-	(assert(around +(?i 1) ?j))
-	(assert(around +(?i 1) +(?j 1)))
+	(check-around 8 8)
+	(box (P 8 8) (safety TRUE) (number 2) (marked FALSE) (neighboring FALSE))
+	(box (P 7 7) (safety TRUE) (number 10) (marked FALSE) (neighboring FALSE))
+	(box (P 7 8) (safety TRUE) (number 10) (marked FALSE) (neighboring FALSE))
+	(box (P 7 9) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+	(box (P 8 7) (safety TRUE) (number 10) (marked FALSE) (neighboring FALSE))
+	(box (P 8 9) (safety TRUE) (number 10) (marked FALSE) (neighboring FALSE))
+	(box (P 9 7) (safety TRUE) (number 10) (marked FALSE) (neighboring FALSE))
+	(box (P 9 8) (safety TRUE) (number 10) (marked FALSE) (neighboring FALSE))
+	(box (P 9 9) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+	(box (P 4 2) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+	(box (P 4 0) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+	(box (P 2 2) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
 	)
 
-(deffunction notsame
-	(?a ?b ?c ?d ?e ?f ?g ?h ?i ?j ?k ?l ?m ?n ?o ?p)
-	( and
-		(or (<> ?a ?c) (<> ?b ?d))
-		(or (<> ?a ?e) (<> ?b ?f))
-		(or (<> ?a ?g) (<> ?b ?h))
-		(or (<> ?a ?i) (<> ?b ?j))
-		(or (<> ?a ?k) (<> ?b ?l))
-		(or (<> ?a ?m) (<> ?b ?n))
-		(or (<> ?a ?o) (<> ?b ?p))
-		(or (<> ?c ?e) (<> ?d ?f))
-		(or (<> ?c ?g) (<> ?d ?h))
-		(or (<> ?c ?i) (<> ?d ?j))
-		(or (<> ?c ?k) (<> ?d ?l))
-		(or (<> ?c ?m) (<> ?d ?n))
-		(or (<> ?c ?o) (<> ?d ?p))
-		(or (<> ?e ?g) (<> ?f ?h))
-		(or (<> ?e ?i) (<> ?f ?j))
-		(or (<> ?e ?k) (<> ?f ?l))
-		(or (<> ?e ?m) (<> ?f ?n))
-		(or (<> ?e ?o) (<> ?f ?p))
-		(or (<> ?g ?i) (<> ?h ?j))
-		(or (<> ?g ?k) (<> ?h ?l))
-		(or (<> ?g ?m) (<> ?h ?n))
-		(or (<> ?g ?o) (<> ?h ?p))
-		(or (<> ?i ?k) (<> ?j ?l))
-		(or (<> ?i ?m) (<> ?j ?n))
-		(or (<> ?i ?o) (<> ?j ?p))
-		(or (<> ?k ?m) (<> ?l ?n))
-		(or (<> ?k ?o) (<> ?l ?p))
-		(or (<> ?m ?o) (<> ?n ?p))
+	(deffacts init
+		(check-around 8 8)
+		(box (P 8 8) (safety TRUE) (number 2) (marked FALSE) (neighboring FALSE))
+		(box (P 7 7) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+		(box (P 7 8) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+		(box (P 7 9) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+		(box (P 8 7) (safety FALSE) (number 10) (marked TRUE) (neighboring FALSE))
+		(box (P 8 9) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+		(box (P 9 7) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+		(box (P 9 8) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+		(box (P 9 9) (safety FALSE) (number 10) (marked TRUE) (neighboring FALSE))
+		(box (P 4 2) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+		(box (P 4 0) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+		(box (P 2 2) (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))
+		)
+
+(deftemplate box
+	(multislot P)
+	(slot safety)
+	(slot number)
+	(slot marked)
+	(slot neighboring))
+
+(deffunction is-neighbor
+	(?i ?j ?k ?l)
+	(or
+		(and (= ?i (+ ?k 1)) (= ?j (+ ?l 1)) )
+		(and (= ?i (+ ?k 1)) (= ?j ?l))
+		(and (= ?i (+ ?k 1)) (= ?j (- ?l 1)) )
+		(and (= ?i (- ?k 1)) (= ?j (+ ?l 1)) )
+		(and (= ?i (- ?k 1)) (= ?j ?l) )
+		(and (= ?i (- ?k 1)) (= ?j (- ?l 1)) )
+		(and (= ?i ?k) (= ?j (- ?l 1)) )
+		(and (= ?i ?k) (= ?j (+ ?l 1)) )
 		))
 
-(defrule check-box-one
-	(one ?x ?y)
-	(unsafe ? ?)
+(defrule set-neighbors
+	(check-around ?i ?j)
+	?f <- (box
+		(P ?r ?s)
+		(safety ?)
+		(number ?)
+		(marked ?)
+		(neighboring ?n))
+	?g <- (box
+		(P ?r ?s)
+		(safety ?)
+		(number ?)
+		(marked ?)
+		(neighboring ?n))
 	=>
-	(check ?x ?y))
+	(if (and (is-neighbor ?i ?j ?r ?s) (eq ?n FALSE)) then
+		(modify ?g (neighboring TRUE))
+		(printout t "t" crlf)
+	else (if (and (not (is-neighbor ?i ?j ?r ?s)) (eq ?n TRUE)) then
+	(modify ?f (neighboring FALSE))
+	))
+)
 
-(defrule check-box-two
-	(two ?x ?y)
-	(unsafe ? ?)
-	=>
-	(check ?x ?y))
-
-(defrule check-box-three
-	(three ?x ?y)
-	(unsafe ? ?)
-	=>
-	(check ?x ?y))
-
-(defrule check-box-four
-	(four ?x ?y)
-	(unsafe ? ?)
-	=>
-	(check ?x ?y))
-
-(defrule mark-box-one-unsafe
-	(check ?x ?y)
-	(one ?x ?y)
-	(around ?a ?b)
-	(safe ?a ?b)
-	(around ?c ?d)
-	(safe ?c ?d)
-	(around ?e ?f)
-	(safe ?e ?f)
-	(around ?g ?h)
-	(safe ?g ?h)
-	(around ?i ?j)
-	(safe ?i ?j)
-	(around ?k ?l)
-	(safe ?k ?l)
-	(around ?m ?n)
-	(safe ?m ?n)
-	(around ?o ?p)
-	(unsafe ?o ?p)
-	=>
-	(if(notsame (?a ?b ?c ?d ?e ?f ?g ?h ?i ?j ?k ?l ?m ?n ?o ?p)) then
-		(assert(mark ?o ?p)))
+(deffunction count-safe-neighbors
+	(?i ?j)
+	(length$ (find-all-facts ((?f box)) (and (eq ?f:safety TRUE) (eq ?f:neighboring TRUE))))
 	)
 
-(defrule mark-box-one-safe
-	(check ?x ?y)
-	(one ?x ?y)
-	(around ?a ?b)
-	(around ?c ?d)
-	(around ?e ?f)
-	(around ?g ?h)
-	(around ?i ?j)
-	(around ?k ?l)
-	(around ?m ?n)
-	(around ?o ?p)
-	(mark ?o ?p)
-	=>
-	(if(notsame (?a ?b ?c ?d ?e ?f ?g ?h ?i ?j ?k ?l ?m ?n ?o ?p)) then
-		(assert(safe ?a ?b))
-		(assert(safe ?c ?d))
-		(assert(safe ?e ?f))
-		(assert(safe ?g ?h))
-		(assert(safe ?i ?j))
-		(assert(safe ?k ?l))
-		(assert(safe ?m ?n)))
-	))
+(deffunction count-marked-neighbors
+	(?i ?j)
+	(length$ (find-all-facts ((?f box)) (and (eq ?f:marked TRUE) (eq ?f:neighboring TRUE))))
+	)
 
-
-(defrule mark-box-two
-	(check ?x ?y)
-	(two ?x ?y)
-	(around ?a ?b)
-	(safe ?a ?b)
-	(around ?c ?d)
-	(safe ?c ?d)
-	(around ?e ?f)
-	(safe ?e ?f)
-	(around ?g ?h)
-	(safe ?g ?h)
-	(around ?i ?j)
-	(safe ?i ?j)
-	(around ?k ?l)
-	(safe ?k ?l)
-	(around ?m ?n)
-	(unsafe ?m ?n)
-	(around ?o ?p)
-	(unsafe ?o ?p)
+(defrule mark-box
+	(declare (salience -99))
+	(check-around ?i ?j)
+	(box
+		(P ?i ?j)
+		(safety TRUE)
+		(number ?n)
+		(marked FALSE)
+		(neighboring FALSE))
+	?temp2 <- (box
+		(P ?r ?s)
+		(safety FALSE)
+		(number ?)
+		(marked FALSE)
+		(neighboring TRUE))
 	=>
-	if(notsame (?a ?b ?c ?d ?e ?f ?g ?h ?i ?j ?k ?l ?m ?n ?o ?p) then
-		(assert(mark ?m ?n))
-		(assert(safe ?m ?n))
-		(assert(mark ?o ?p))
-		(assert(safe ?o ?p))
-	))
+	(printout t ?r ?s crlf)
+	(printout t ?i ?j crlf)
+	(printout t (count-safe-neighbors ?i ?j) crlf)
+	(if (= (count-safe-neighbors ?i ?j) (- 8 ?n)) then
+		(modify ?temp2 (marked TRUE))
+		(assert(mark ?r ?s))
+	)
+)
 
-(defrule mark-box-three
-	(check ?x ?y)
-	(two ?x ?y)
-	(around ?a ?b)
-	(safe ?a ?b)
-	(around ?c ?d)
-	(safe ?c ?d)
-	(around ?e ?f)
-	(safe ?e ?f)
-	(around ?g ?h)
-	(safe ?g ?h)
-	(around ?i ?j)
-	(safe ?i ?j)
-	(around ?k ?l)
-	(unsafe ?k ?l)
-	(around ?m ?n)
-	(unsafe ?m ?n)
-	(around ?o ?p)
-	(unsafe ?o ?p)
+(defrule open-box-safe
+	(declare (salience -98))
+	(check-around ?i ?j)
+	(box
+		(P ?i ?j)
+		(safety TRUE)
+		(number ?n)
+		(marked FALSE)
+		(neighboring FALSE))
+	(box
+		(P ?r ?s)
+		(safety FALSE)
+		(number ?)
+		(marked FALSE)
+		(neighboring TRUE))
 	=>
-	if(notsame (?a ?b ?c ?d ?e ?f ?g ?h ?i ?j ?k ?l ?m ?n ?o ?p) then
-		(assert(mark ?k ?l))
-		(assert(safe ?k ?l))
-		(assert(mark ?m ?n))
-		(assert(safe ?m ?n))
-		(assert(mark ?o ?p))
-		(assert(safe ?o ?p))
-	))
+	(if (= (count-marked-neighbors ?i ?j) ?n) then
+		(assert(open ?r ?s))
+	)
+)
