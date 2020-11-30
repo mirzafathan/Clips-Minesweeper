@@ -28,12 +28,17 @@ def UpdateFact():
                     Fact += ') (marked FALSE) (neighboring FALSE))'
                     print(Fact)
                     env.assert_string(Fact)
+            else:
+                Fact = '(box (P ' + str(i) + ' ' + str(j)
+                Fact += ') (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))'
+                print(Fact)
+                env.assert_string(Fact)
             if (marked[i][j]):
-                Fact = '(box (P ' + str(i) + ' ' + str(j) + ') (safety FALSE) (number) 10 (marked TRUE) (neighboring FALSE))'
+                Fact = '(box (P ' + str(i) + ' ' + str(j) + ') (safety FALSE) (number 10) (marked TRUE) (neighboring FALSE))'
                 env.assert_string(Fact)
     Game.ShowGameField(field, opened, marked)
 
-def Initiate(env):
+def Initiate():
     env.load('kbagent.clp')
     env.reset()
     for i in range(-1, Size+1):
@@ -53,6 +58,24 @@ def Initiate(env):
             initframe = '(box (P ' + str(i) + ' ' + str(j) + ') (safety FALSE) (number 0) (marked FALSE) (neighboring FALSE))'
             env.assert_string(initframe)
 
+def Initiate2():
+    env.clear()
+    env.load('kbagent.clp')
+    env.reset()
+    for i in range(-1, Size+1):
+        initframe = '(box (P ' + str(-1) + ' ' + str(i) + ') (safety TRUE) (number 0) (marked FALSE) (neighboring FALSE))'
+        env.assert_string(initframe)
+    for i in range(0, Size+1):
+        initframe = '(box (P ' + str(i) + ' ' + str(-1) + ') (safety TRUE) (number 0) (marked FALSE) (neighboring FALSE))'
+        env.assert_string(initframe)
+    for i in range(0, Size+1):
+        initframe = '(box (P ' + str(Size) + ' ' + str(i) + ') (safety TRUE) (number 0) (marked FALSE) (neighboring FALSE))'
+        env.assert_string(initframe)
+    for i in range(0, Size):
+        initframe = '(box (P ' + str(i) + ' ' + str(Size) + ') (safety TRUE) (number 0) (marked FALSE) (neighboring FALSE))'
+        env.assert_string(initframe)
+    UpdateFact()
+
 if __name__ == "__main__":
     input_method = input('1. Manual\n2. From file\nSelect input method: ')
     input_method = int(input_method)
@@ -61,12 +84,13 @@ if __name__ == "__main__":
     # Num = int(input('Masukkan Jumlah Bom:'))
     Coord = []
     Predict = []
-
+    Size = 0
+    Num = 0
     if input_method == 1:
-        size = int(input("Enter size : "))
-        n_bombs = int(input("How many bombs? :"))
+        Size = int(input("Enter size : "))
+        Num = int(input("How many bombs? :"))
 
-        for i in range(n_bombs):
+        for i in range(Num):
             point = input("Bomb Coordinate : ").split()
             Coord.append([int(j) for j in point])
 
@@ -76,9 +100,9 @@ if __name__ == "__main__":
         try:
             with open(filename, 'r') as f:
                 Size = int(f.readline())
-                n_bombs = int(f.readline())
+                Num = int(f.readline())
 
-                for i in range(n_bombs):
+                for i in range(Num):
                     point = f.readline().split()
                     Coord.append([int(j) for j in point])
                 f.close()
@@ -95,16 +119,17 @@ if __name__ == "__main__":
     #     point = input("Bomb Coordinate : ").split()
     #     Coord.append([int(j) for j in point])
 
-    field = Game.MakeField(Coord, Size, n_bombs)
+    field = Game.MakeField(Coord, Size, Num)
     opened = [[False for i in range(Size)] for j in range(Size)]
     marked = [[False for i in range(Size)] for j in range(Size)]
 
     Game.ShowGameField(field, opened, marked)
 
     env = clips.Environment()
-    Initiate(env)
+    Initiate()
     Action('(open 0 0)')
-    UpdateFact()
-
+    Initiate2()
+    print(env.run())
+    NextMove = 0
     for i in env.facts():
         print(i)
