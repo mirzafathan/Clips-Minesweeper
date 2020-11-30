@@ -49,17 +49,17 @@ while i[0] != 100:
     try :
         if(m == 'o'):
             if (Game.Open(i[0], i[1], field, opened, marked)):
-                break
+                print("Game Field :")
+                Game.ShowField()
         else:
             Game.Mark(i[0], i[1], field, opened, marked)
 
     except:
         print("[ERROR] Input out of range")
     
-    Game.ShowGameField(field, opened, marked)
+    if not(Game.ShowGameField(field, opened, marked)):
+        print("Game over, you won")
+        quit()
+    
     i = Game.inputCoordinate()
 
-else:
-    print("Game over")
-
-Game.ShowField(field)

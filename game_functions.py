@@ -57,6 +57,9 @@ def ShowGameField(Field, Done, Flag):
     for i in range((len(Field)*2)):
         print('-', end='')
     print('+')
+
+    unopened = 0
+
     for i in range(len(Field)):
         print('|', end='')
         for j in range(len(Field)):
@@ -67,6 +70,7 @@ def ShowGameField(Field, Done, Flag):
                     print('M', end=' ')
                 else:
                     print('.', end=' ')
+                    unopened += 1
             else:
                 if Done[i][j]:
                     print(Field[i][j], end=' ')
@@ -74,11 +78,17 @@ def ShowGameField(Field, Done, Flag):
                     print('M', end=' ')
                 else:
                     print('.', end=' ')
+                    unopened += 1
         print('|')
     print('+', end='')
     for i in range((len(Field)*2)):
         print('-', end='')
     print('+')
+
+    if (unopened > 0):
+        return True
+    else:
+        return False
 
 
 def Open(x, y, field, opened, marked):
