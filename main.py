@@ -12,7 +12,7 @@ def Action(str):
     elif(act == 'm'):
         x = int(str[6])
         y = int(str[8])
-        Game.Open(x, y, field, opened, marked)
+        Game.Mark(x, y, field, opened, marked)
         Predict.append([x,y])
 
 def UpdateFact():
@@ -22,11 +22,12 @@ def UpdateFact():
                 Fact = '(box (P ' + str(i) + ' ' + str(j)
                 if(field[i][j]=='B'):
                     print('You Lose')
-                else:
+                elif (checked[i][j] == False):
                     Fact += ') (safety TRUE) (number '
                     Fact += str(field[i][j])
                     Fact += ') (marked FALSE) (neighboring FALSE))'
                     print(Fact)
+                    checked[i][j] = True
                     env.assert_string(Fact)
             else:
                 Fact = '(box (P ' + str(i) + ' ' + str(j)
@@ -122,14 +123,32 @@ if __name__ == "__main__":
     field = Game.MakeField(Coord, Size, Num)
     opened = [[False for i in range(Size)] for j in range(Size)]
     marked = [[False for i in range(Size)] for j in range(Size)]
+    checked = [[False for i in range(Size)] for j in range(Size)]
 
     Game.ShowGameField(field, opened, marked)
 
     env = clips.Environment()
+<<<<<<< HEAD
     Initiate()
     Action('(open 0 0)')
     Initiate2()
     print(env.run())
     NextMove = 0
     for i in env.facts():
+=======
+    Initiate(env)
+    for i in env.facts(): #debugging
+        print(i)
+    Action('(open 0 0)')
+    UpdateFact()
+
+    for i in env.facts(): #debugging
+>>>>>>> 73cb88f72141f0ff88acc59283a7e868f4543337
+        print(i)
+
+    Action('(open 2 2)')
+    Game.ShowGameField(field, opened, marked)
+    UpdateFact()
+
+    for i in env.facts(): #debugging
         print(i)
