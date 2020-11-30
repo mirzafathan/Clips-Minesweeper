@@ -105,16 +105,20 @@ def Open(x, y, field, opened, marked):
                     Open(x+1, y+1, field, opened, marked)
             else:
                 opened[x][y] = True
+            return False
         else:
             opened[x][y] = True
-            print("You Open a Bomb. You Lose.")
-        ShowGameField(field, opened, marked)
+            print("You Opened a Bomb. You Lose.")
+            return True
 
 
 def Mark(x, y, field, opened, marked):
     if not marked[x][y]:
         marked[x][y] = True
-        ShowGameField(field, opened, marked)
+
+def inputCoordinate():
+    i = input("Coordinate : ").split()
+    return[int(j) for j in i]
 
 
 """
