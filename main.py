@@ -131,21 +131,9 @@ if __name__ == "__main__":
     env = clips.Environment()
     Initiate()
     Action('(open 0 0)')
-<<<<<<< HEAD
     UpdateFact()
 
     ReInitiate()
-=======
-    Initiate2()
-    print(env.run())
-    NextMove = 0
-    for i in env.facts():
-        print(i)
-
-    Action('(open 2 2)')
-    Game.ShowGameField(field, opened, marked)
-    UpdateFact()
->>>>>>> 4db547f4981b13854b3127d042f8a454a792144f
 
     for i in env.facts():
         print(i)
