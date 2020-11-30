@@ -26,17 +26,15 @@ def UpdateFact():
                     Fact += ') (safety TRUE) (number '
                     Fact += str(field[i][j])
                     Fact += ') (marked FALSE) (neighboring FALSE))'
-                    print(Fact)
+                    Temp.append(Fact)
                     checked[i][j] = True
-                    env.assert_string(Fact)
             else:
                 Fact = '(box (P ' + str(i) + ' ' + str(j)
                 Fact += ') (safety FALSE) (number 10) (marked FALSE) (neighboring FALSE))'
-                print(Fact)
-                env.assert_string(Fact)
+                Temp.append(Fact)
             if (marked[i][j]):
                 Fact = '(box (P ' + str(i) + ' ' + str(j) + ') (safety FALSE) (number 10) (marked TRUE) (neighboring FALSE))'
-                env.assert_string(Fact)
+                Temp.append(Fact)
     Game.ShowGameField(field, opened, marked)
 
 def Initiate():
@@ -59,7 +57,7 @@ def Initiate():
             initframe = '(box (P ' + str(i) + ' ' + str(j) + ') (safety FALSE) (number 0) (marked FALSE) (neighboring FALSE))'
             env.assert_string(initframe)
 
-def Initiate2():
+def ReInitiate():
     env.clear()
     env.load('kbagent.clp')
     env.reset()
@@ -75,7 +73,9 @@ def Initiate2():
     for i in range(0, Size):
         initframe = '(box (P ' + str(i) + ' ' + str(Size) + ') (safety TRUE) (number 0) (marked FALSE) (neighboring FALSE))'
         env.assert_string(initframe)
-    UpdateFact()
+    for i in range(len(Temp)):
+        env.assert_string(Temp[i])
+    env.run()
 
 if __name__ == "__main__":
     input_method = input('1. Manual\n2. From file\nSelect input method: ')
@@ -124,31 +124,20 @@ if __name__ == "__main__":
     opened = [[False for i in range(Size)] for j in range(Size)]
     marked = [[False for i in range(Size)] for j in range(Size)]
     checked = [[False for i in range(Size)] for j in range(Size)]
+    Temp = []
 
     Game.ShowGameField(field, opened, marked)
 
     env = clips.Environment()
-<<<<<<< HEAD
     Initiate()
     Action('(open 0 0)')
-    Initiate2()
-    print(env.run())
-    NextMove = 0
+    UpdateFact()
+
+    ReInitiate()
+
     for i in env.facts():
-=======
-    Initiate(env)
-    for i in env.facts(): #debugging
         print(i)
-    Action('(open 0 0)')
-    UpdateFact()
-
-    for i in env.facts(): #debugging
->>>>>>> 73cb88f72141f0ff88acc59283a7e868f4543337
-        print(i)
-
-    Action('(open 2 2)')
-    Game.ShowGameField(field, opened, marked)
-    UpdateFact()
-
-    for i in env.facts(): #debugging
-        print(i)
+  #  UpdateFact()
+   # NextMove = 0
+    #for i in env.facts():
+     #   print(i)

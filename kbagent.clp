@@ -83,20 +83,24 @@
 		(number ?n)
 		(marked FALSE)
 		(neighboring FALSE))
-	?temp2 <- (box
+	(box
 		(P ?r ?s)
 		(safety FALSE)
 		(number ?)
 		(marked FALSE)
 		(neighboring TRUE))
 	=>
-	(printout t ?r ?s crlf)
-	(printout t ?i ?j crlf)
-	(printout t (count-safe-neighbors ?i ?j) crlf)
+;	(printout t "tes" ?r ?s crlf)
+;	(printout t "ceking " ?i ?j crlf)
+;	(printout t "nilai n " ?n crlf)
+;	(printout t (count-safe-neighbors ?i ?j) crlf)
+;	(printout t (= (count-safe-neighbors ?i ?j) (- 8 ?n)) crlf)
 	(if (= (count-safe-neighbors ?i ?j) (- 8 ?n)) then
+;		(printout t "sampe sini lancar" ?r ?s crlf)
 		(assert(mark ?r ?s))
 		(retract ?temp1)
-	)
+		else
+		(retract ?temp1))
 )
 
 (defrule open-box-safe
